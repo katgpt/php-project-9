@@ -3,7 +3,7 @@
 // Подключение автозагрузки через composer
 require __DIR__ . '/../vendor/autoload.php';
 
-use Slim\AppFactory;
+use Slim\Factory\AppFactory;
 use Slim\Views\PhpRenderer;
 
 $app = AppFactory::create();
