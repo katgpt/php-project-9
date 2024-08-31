@@ -7,14 +7,10 @@ use Slim\Factory\AppFactory;
 use Slim\Views\PhpRenderer;
 
 $app = AppFactory::create();
+$renderer = new PhpRenderer('path/to/templates');
 
-// Настройка PHP-View
-$container = $app->getContainer();
-$container['view'] = new PhpRenderer('path/to/templates');
-
-// Маршрут для главной страницы
-$app->get('/', function ($request, $response, $args) {
-    return $this->view->render($response, 'home.php', ['name' => 'John']);
+$app->get('/', function ($request, $response, $args) use ($renderer) {
+    return $renderer->render($response, 'home.php', ['name' => 'John']);
 });
 
 $app->run();
