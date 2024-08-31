@@ -7,7 +7,7 @@ use Slim\Factory\AppFactory;
 use Slim\Views\PhpRenderer;
 
 $app = AppFactory::create();
-$renderer = new PhpRenderer('path/to/templates');
+$renderer = new PhpRenderer(__DIR__ . '/../templates');
 
 $app->get('/', function ($request, $response, $args) use ($renderer) {
     return $renderer->render($response, 'home.php', ['name' => 'John']);
