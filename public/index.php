@@ -177,9 +177,6 @@ $app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) {
     $urlStmt->execute([$id]);
     $url = $urlStmt->fetch()['name'];
 
-    // Логирование URL
-    echo "Checking URL: " . $url . "<br>";
-
     $client = new Client();
 
     try {
@@ -188,13 +185,10 @@ $app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) {
     } catch (RequestException $e) {
         $responseUrl = $e->getResponse();
         if (is_null($responseUrl)) {
-            echo "RequestException: Response is null<br>";
             return $this->get('renderer')->render($response, "errors/500.phtml", ['activeMenu' => '']);
         }
-        echo "RequestException: " . $e->getMessage() . "<br>";
         $this->get('flash')->addMessage('warning', 'Проверка выполнена успешно, но сервер ответил с ошибкой');
     } catch (ConnectException $e) {
-        echo "ConnectException: " . $e->getMessage() . "<br>";
         $this->get('flash')->addMessage('danger', 'Произошла ошибка при проверке, не удалось подключиться');
         return $response->withRedirect($this->get('router')->urlFor('urls.show', ['id' => (string)$id]));
     }
@@ -208,19 +202,12 @@ $app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) {
     $description = optional($document->first('meta[name=description]'))->content;
     $currentTime = date("Y-m-d H:i:s");
 
-    // Логирование результатов проверки
-    echo "Status Code: " . $statusCode . "<br>";
-    echo "H1: " . $h1 . "<br>";
-    echo "Title: " . $title . "<br>";
-    echo "Description: " . $description . "<br>";
-
     $newCheckQuery = 'INSERT INTO url_checks (url_id, status_code, h1, title, description, created_at)
                       VALUES (?, ?, ?, ?, ?, ?)';
     $pdo->prepare($newCheckQuery)->execute([$id, $statusCode, $h1, $title, $description, $currentTime]);
 
     return $response->withRedirect($this->get('router')->urlFor('urls.show', ['id' => (string)$id]), 301);
 })->setName('urls.id.check');
-
 
 $app->map(['GET', 'POST'], '/{routes:.+}', function ($request, $response) {
     return $this->get('renderer')->render($response, 'errors/404.phtml', ['activeMenu' => '']);
