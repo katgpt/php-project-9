@@ -181,14 +181,7 @@ $app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) {
 
     try {
         $responseUrl = $client->get($url);
-        $statusCode = $responseUrl->getStatusCode();
-
-        // Проверка на статус код
-        if ($statusCode >= 400) {
-            $this->get('flash')->addMessage('warning', 'Проверка выполнена успешно, но сервер ответил с ошибкой');
-        } else {
-            $this->get('flash')->addMessage('success', 'Страница успешно проверена');
-        }
+        $this->get('flash')->addMessage('success', 'Страница успешно проверена');
     } catch (RequestException $e) {
         $responseUrl = $e->getResponse();
         if (is_null($responseUrl)) {
@@ -198,6 +191,8 @@ $app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) {
     } catch (ConnectException $e) {
         $this->get('flash')->addMessage('danger', 'Произошла ошибка при проверке, не удалось подключиться');
         return $response->withRedirect($this->get('router')->urlFor('urls.show', ['id' => (string)$id]));
+    } catch (\Exception $e) {
+        return $this->get('renderer')->render($response, "errors/500.phtml", ['activeMenu' => '']);
     }
 
     $body = $responseUrl->getBody();
