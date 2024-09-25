@@ -178,7 +178,7 @@ $app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) {
     $url = $urlStmt->fetch()['name'];
 
     // Логирование URL
-    error_log("Checking URL: " . $url);
+    var_dump("Checking URL: " . $url);
 
     $client = new Client();
 
@@ -188,13 +188,13 @@ $app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) {
     } catch (RequestException $e) {
         $responseUrl = $e->getResponse();
         if (is_null($responseUrl)) {
-            error_log("RequestException: Response is null");
+            var_dump("RequestException: Response is null");
             return $this->get('renderer')->render($response, "errors/500.phtml", ['activeMenu' => '']);
         }
-        error_log("RequestException: " . $e->getMessage());
+        var_dump("RequestException: " . $e->getMessage());
         $this->get('flash')->addMessage('warning', 'Проверка выполнена успешно, но сервер ответил с ошибкой');
     } catch (ConnectException $e) {
-        error_log("ConnectException: " . $e->getMessage());
+        var_dump("ConnectException: " . $e->getMessage());
         $this->get('flash')->addMessage('danger', 'Произошла ошибка при проверке, не удалось подключиться');
         return $response->withRedirect($this->get('router')->urlFor('urls.show', ['id' => (string)$id]));
     }
@@ -209,10 +209,10 @@ $app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) {
     $currentTime = date("Y-m-d H:i:s");
 
     // Логирование результатов проверки
-    error_log("Status Code: " . $statusCode);
-    error_log("H1: " . $h1);
-    error_log("Title: " . $title);
-    error_log("Description: " . $description);
+    var_dump("Status Code: " . $statusCode);
+    var_dump("H1: " . $h1);
+    var_dump("Title: " . $title);
+    var_dump("Description: " . $description);
 
     $newCheckQuery = 'INSERT INTO url_checks (url_id, status_code, h1, title, description, created_at)
                       VALUES (?, ?, ?, ?, ?, ?)';
