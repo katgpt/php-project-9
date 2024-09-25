@@ -175,12 +175,16 @@ $app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) {
     $urlQuery = 'SELECT * FROM urls WHERE id= ?';
     $urlStmt = $pdo->prepare($urlQuery);
     $urlStmt->execute([$id]);
-    $url = $urlStmt->fetch()['name'];
+    $url = $urlStmt->fetch();
+
+    if (!$url) {
+        return $this->get('renderer')->render($response, 'errors/404.phtml', ['activeMenu' => '']);
+    }
 
     $client = new Client();
 
     try {
-        $responseUrl = $client->get($url);
+        $responseUrl = $client->get($url['name']);
         $this->get('flash')->addMessage('success', 'Страница успешно проверена');
     } catch (RequestException $e) {
         $responseUrl = $e->getResponse();
