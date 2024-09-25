@@ -178,7 +178,7 @@ $app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) {
     $url = $urlStmt->fetch()['name'];
 
     // Логирование URL
-    var_dump("Checking URL: " . $url);
+    echo "Checking URL: " . $url . "<br>";
 
     $client = new Client();
 
@@ -188,13 +188,13 @@ $app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) {
     } catch (RequestException $e) {
         $responseUrl = $e->getResponse();
         if (is_null($responseUrl)) {
-            var_dump("RequestException: Response is null");
+            echo "RequestException: Response is null<br>";
             return $this->get('renderer')->render($response, "errors/500.phtml", ['activeMenu' => '']);
         }
-        var_dump("RequestException: " . $e->getMessage());
+        echo "RequestException: " . $e->getMessage() . "<br>";
         $this->get('flash')->addMessage('warning', 'Проверка выполнена успешно, но сервер ответил с ошибкой');
     } catch (ConnectException $e) {
-        var_dump("ConnectException: " . $e->getMessage());
+        echo "ConnectException: " . $e->getMessage() . "<br>";
         $this->get('flash')->addMessage('danger', 'Произошла ошибка при проверке, не удалось подключиться');
         return $response->withRedirect($this->get('router')->urlFor('urls.show', ['id' => (string)$id]));
     }
@@ -209,10 +209,10 @@ $app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) {
     $currentTime = date("Y-m-d H:i:s");
 
     // Логирование результатов проверки
-    var_dump("Status Code: " . $statusCode);
-    var_dump("H1: " . $h1);
-    var_dump("Title: " . $title);
-    var_dump("Description: " . $description);
+    echo "Status Code: " . $statusCode . "<br>";
+    echo "H1: " . $h1 . "<br>";
+    echo "Title: " . $title . "<br>";
+    echo "Description: " . $description . "<br>";
 
     $newCheckQuery = 'INSERT INTO url_checks (url_id, status_code, h1, title, description, created_at)
                       VALUES (?, ?, ?, ?, ?, ?)';
@@ -220,6 +220,7 @@ $app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) {
 
     return $response->withRedirect($this->get('router')->urlFor('urls.show', ['id' => (string)$id]), 301);
 })->setName('urls.id.check');
+
 
 $app->map(['GET', 'POST'], '/{routes:.+}', function ($request, $response) {
     return $this->get('renderer')->render($response, 'errors/404.phtml', ['activeMenu' => '']);
