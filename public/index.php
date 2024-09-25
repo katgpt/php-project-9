@@ -181,7 +181,14 @@ $app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) {
 
     try {
         $responseUrl = $client->get($url);
-        $this->get('flash')->addMessage('success', 'Страница успешно проверена');
+        $statusCode = $responseUrl->getStatusCode();
+
+        // Проверка на статус код
+        if ($statusCode >= 400) {
+            $this->get('flash')->addMessage('warning', 'Проверка выполнена успешно, но сервер ответил с ошибкой');
+        } else {
+            $this->get('flash')->addMessage('success', 'Страница успешно проверена');
+        }
     } catch (RequestException $e) {
         $responseUrl = $e->getResponse();
         if (is_null($responseUrl)) {
