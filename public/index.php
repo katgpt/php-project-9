@@ -175,16 +175,12 @@ $app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) {
     $urlQuery = 'SELECT * FROM urls WHERE id= ?';
     $urlStmt = $pdo->prepare($urlQuery);
     $urlStmt->execute([$id]);
-    $url = $urlStmt->fetch();
-
-    if (!$url) {
-        return $this->get('renderer')->render($response, 'errors/404.phtml', ['activeMenu' => '']);
-    }
+    $url = $urlStmt->fetch()['name'];
 
     $client = new Client();
 
     try {
-        $responseUrl = $client->get($url['name']);
+        $responseUrl = $client->get($url);
         $this->get('flash')->addMessage('success', 'Страница успешно проверена');
     } catch (RequestException $e) {
         $responseUrl = $e->getResponse();
@@ -195,8 +191,6 @@ $app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) {
     } catch (ConnectException $e) {
         $this->get('flash')->addMessage('danger', 'Произошла ошибка при проверке, не удалось подключиться');
         return $response->withRedirect($this->get('router')->urlFor('urls.show', ['id' => (string)$id]));
-    } catch (\Exception $e) {
-        return $this->get('renderer')->render($response, "errors/500.phtml", ['activeMenu' => '']);
     }
 
     $body = $responseUrl->getBody();
