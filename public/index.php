@@ -191,7 +191,7 @@ $app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) {
     } catch (ConnectException $e) {
         $this->get('flash')->addMessage('danger', 'Произошла ошибка при проверке, не удалось подключиться');
         return $response->withRedirect($this->get('router')->urlFor('urls.show', ['id' => (string)$id]));
-    } catch (\Throwable $e) {
+    } catch (Throwable $e) {
         $this->get('flash')->addMessage('danger', 'Произошла ошибка при проверке, не удалось подключиться');
         return $response->withRedirect($this->get('router')->urlFor('urls.show', ['id' => (string)$id]));
     }
