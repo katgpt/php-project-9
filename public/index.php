@@ -193,7 +193,7 @@ $app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) {
         return $response->withRedirect($this->get('router')->urlFor('urls.show', ['id' => (string)$id]));
     } catch (\Throwable) {
         $this->get('flash')->addMessage('danger', 'Произошла ошибка при проверке, не удалось подключиться');
-        return $response->withRedirect($this->get('router')->urlFor('urls.show', ['id' => (string)$id])); 
+        return $response->withRedirect($this->get('router')->urlFor('urls.show', ['id' => (string)$id]));
     }
 
     $body = $responseUrl->getBody();
